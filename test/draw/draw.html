@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <title>DRAW</title>
+        <script type="text/javascript" src="../../lib/djs.js"></script>
+        <script type="text/javascript">
+            window.onload = function() {
+                djs_start_ajax("http://localhost:8080/djs");
+            }
+        </script>
+    </head>
+
+    <body>
+        <table>
+            <tr>
+                <td>
+                    <canvas id="canvas" width="500" height="500" style="border : 1px solid black;"></canvas>
+                </td>
+                <td valign="top">
+                    COMMANDS:(Case insensitive, separated by space)<br>
+                    &nbsp;&nbsp;<font color="blue">FD</font> x - Go Forward x pixels<br>
+                    &nbsp;&nbsp;<font color="blue">BK</font> x - Go Back x pixels<br>
+                    &nbsp;&nbsp;<font color="blue">RT</font> x - Turn Right x degrees<br>
+                    &nbsp;&nbsp;<font color="blue">LT</font> x - Turn Left x degrees<br>
+                    &nbsp;&nbsp;<font color="blue">PU</font> - Pen Up<br>
+                    &nbsp;&nbsp;<font color="blue">PD</font> - Pen Down<br>
+                    &nbsp;&nbsp;<font color="blue">REPEAT</font> n [ ... ] - Loop(Allowed Nested Loop)<br>
+                    &nbsp;&nbsp;<font color="blue">CL</font> - Clear<br>
+                    &nbsp;&nbsp;<font color="blue">HOME</font> - Move pen to center<br>
+                    &nbsp;&nbsp;<font color="blue">TO</font> name args... [ ... ] - Define a precedure<br>
+                    &nbsp;&nbsp;(args must start with ':', allowed call procedure in procedure)<br>
+                    &nbsp;&nbsp;<font color="blue">IF</font> condition [ ... ] - Conditional statements<br>
+                    &nbsp;&nbsp;(only '<','>','=' supported, conditions can be connected with '&'(AND), '|'(OR))<br>
+                    &nbsp;&nbsp;<font color="blue">STOP</font> - Stop drawing(can be used as return in procedure)<br>
+                    <br>
+
+                    SAMPLES:<br>
+                    &nbsp;&nbsp;Triangle : REPEAT 3 [RT 120 FD 100]<br>
+                    &nbsp;&nbsp;Rectangle : REPEAT 4 [FD 50 RT 90]<br>
+                    &nbsp;&nbsp;Star : REPEAT 5 [FD 100 RT 144]<br>
+                    &nbsp;&nbsp;Circle : REPEAT 60 [FD 10 RT 6]<br>
+                    &nbsp;&nbsp;Circles : REPEAT 10 [RT 36 REPEAT 60 [FD 10 RT 6]]<br>
+                    &nbsp;&nbsp;Spiral1 : TO SPIRAL :A [IF :A > 100 [STOP] FD :A RT 90 SPIRAL :A + 5] SPIRAL 5<br>
+                    &nbsp;&nbsp;Spiral2 : TO SPIRAL :A :B [IF :A > 400 [STOP] FD :A RT 120 SPIRAL :A + :B :B + 1] SPIRAL 2 2<br>
+                    &nbsp;&nbsp;Tree : TO TREE :A [FD :A IF :A < 50 [BK :A STOP] LT 20 TREE :A - 10 RT 40 TREE :A - 10 LT 20 BK :A] RT 90 PU FD 250 LT 180 PD TREE 100<br>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <input type="text" id="command" size="84" value=""/>
+        <input type="button" id="draw" value="DRAW" disabled/>
+    </body>
+</html>

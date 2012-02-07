@@ -1,0 +1,33 @@
+<html>
+	<head>
+		<title></title>
+		<script type="text/javascript" src="../../lib/djs.js"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+                            djs_start_ajax("http://localhost:8080/djs");
+			}
+		</script>
+	</head>
+
+	<body>
+                <div id="status">Connecting...</div>
+                <form onsubmit="return false;">
+                    <table>
+                        <tr>
+                            <td align="right">Nickname:</td>
+                            <td><input type="text" id="nickname" value=""/></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td align="right">Message:</td>
+                            <td><input type="text" id="message" value=""/></td>
+                            <td><input type="submit" id="btn" value="send"/></td>
+                        </tr>
+                    </table>
+                    <hr>
+                </form>
+		<div id="chats">
+                    <div id="first"></div>
+                </div>
+	</body>
+</html>
