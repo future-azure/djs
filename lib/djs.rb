@@ -17,8 +17,8 @@ module DJS
   class DJSError < RuntimeError; end
   class DJSBadRequestError < DJSError; end
 
-  def self.start(klass = DJSConnection, config = {})
-    @@server = DJSServer.new(klass, config)
+  def self.start(klass = DJSConnection, opts = {})
+    @@server = DJSServer.new(klass, opts)
     DJSConnections.server = @@server
   end
 
@@ -95,10 +95,13 @@ module DJS
 
   class DJSServer
     RECONNECT = ""
+    DEFAULT_OPTS = {
+      :buff_size => 200
+    }
 
-    def initialize(klass = nil, config = {})
+    def initialize(klass = DJSConnection, opts = {})
       @klass = klass
-      @config = config
+      @opts = DEFAULT_OPTS.merge(opts)
 
       @connections = Hash.new
       @djs_connections = DJSConnections.new(@connections)
@@ -172,7 +175,7 @@ module DJS
 
     def handshake
       @group.add Thread.current
-      conn = @klass.new(:main)
+      conn = @klass.new(:main, 0, @opts)
       @connections[conn.__id__] = conn
       return conn.__id__.to_s
     end
@@ -202,7 +205,7 @@ module DJS
 
     def callback(cid, method, event_id)
       @group.add Thread.current
-      conn = @klass.new(:callback, cid)
+      conn = @klass.new(:callback, cid, @opts)
       @connections[conn.__id__] = conn
       add_task conn, :on_callback, method, event_id
       req = conn.request.pop
@@ -222,7 +225,7 @@ module DJS
     end
 
     def create_rpc_connection(cid, name, args)
-      conn = @klass.new(:rpc, cid)
+      conn = @klass.new(:rpc, cid, @opts)
       @connections[conn.__id__] = conn
       conn.set_rpc(name, args)
       return conn
@@ -232,13 +235,14 @@ module DJS
   class DJSConnection
     SEP = "\t"
 
-    def initialize(type, cid = 0)
+    def initialize(type, cid = 0, opts = {})
       @type = type
       if @type == :main
         @cid = self.__id__
       else
         @cid = cid
       end
+      @opts = opts
       @request = Queue.new
       @response = Queue.new
       @proxies = Hash.new
@@ -268,7 +272,7 @@ module DJS
             @proxies[proxy.__id__] = proxy
           end
           # TODO length
-          if flush_now || @proxy_ids.length == 200
+          if flush_now || @proxy_ids.length == @opts[:buff_size]
             flush
           end
         }

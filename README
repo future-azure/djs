@@ -70,12 +70,14 @@ API Docs
 
 * Module: DJS
 
-  - DJS.start(klass)
+  - DJS.start(klass, opts = {})
     
     Start DJS server.
 
     Parameters:
       klass (Class) - A class that extends DJS::Connection
+      opts (Hash) - Options. Default values are as below:
+        :buff_size => 200 - Messages stored before synchronization with browser.
 
   - DJS.stop
 
